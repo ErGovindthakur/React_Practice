@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import heroImg from "../assets/shopping-hero.jpeg" // 👉 add your image in assets folder
+import aiIcon from "../assets/ai_icon.png"
+import Ai from "../AI/Ai";
 
 const Home = () => {
+
+  const [aiPage,setAiPage] = useState(false);
+
+  const handleAiContainer = () => {
+    setAiPage(prev => !prev)
+  }
   return (
     <div className="w-full min-h-screen flex flex-col md:flex-row items-center justify-between px-6 md:px-20">
       {/* Left Side - Text */}
@@ -45,6 +53,17 @@ const Home = () => {
           className="w-[300px] md:w-[500px]"
         />
       </motion.div>
+      <div className="fixed bottom-15 right-9 md:right-15" >
+      {
+        aiPage ? (<Ai handleAiContainer={handleAiContainer}/>) :
+        (<img
+        src={aiIcon}
+        alt="Ai Icon"
+        className="w-[54px] rounded-full shadow-md border border-black"
+        onClick={handleAiContainer}
+        />)
+      }
+      </div>
     </div>
   );
 };
