@@ -1,10 +1,12 @@
 import React from 'react'
 import UseStateHook from './hooks/UseStateHook'
+import UseEffectHook from './hooks/UseEffectHook'
 
 const App = () => {
   return (
-    <div className='w-full h-screen bg-zinc-900 text-white'>
+    <div className='w-full h-screen flex gap-3 bg-zinc-900 text-white px-10 py-10'>
       <UseStateHook />
+      <UseEffectHook />
     </div>
   )
 }
