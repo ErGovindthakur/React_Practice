@@ -5,6 +5,7 @@ import UseRefHook from './hooks/UseRefHook'
 import TodoAppWithoutUseCallback from './hooks/TodoApp/TodoAppWithoutUseCallback'
 import TodoAppWithUseCallback from './hooks/TodoApp/TodoAppWithUseCallback'
 import UseMemoHook from './hooks/UseMemoHook'
+import TodoContainer from './hooks/TodoCombineAllHooks/TodoContainer'
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <TodoAppWithoutUseCallback />
       <TodoAppWithUseCallback />
       <UseMemoHook />
+      <TodoContainer />
     </div>
   )
 }
