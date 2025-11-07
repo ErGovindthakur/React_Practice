@@ -26,11 +26,27 @@ export const getProducts = (req,res) => {
           })
      }
 }
+export const getSingleProduct = (req,res) => {
+     const {id}  = req.params;
+     try {
+          
+          return res.status(200).json({
+               success:true,
+               message:`Here is the product id ${id}...`
+          })
+     } catch (err) {
+          return res.status(500).json({
+               success:false,
+               message:err.message
+          })
+     }
+}
 export const updateProduct = (req,res) => {
+     const {id} = req.params;
      try {
           return res.status(200).json({
                success:true,
-               message:"product updated successfully..."
+               message:`Here is the updated product id ${id}...`
           })
      } catch (err) {
           return res.status(500).json({
@@ -40,10 +56,11 @@ export const updateProduct = (req,res) => {
      }
 }
 export const deleteProduct = (req,res) => {
+     const {id} = req.params;
      try {
           return res.status(200).json({
                success:true,
-               message:"product deleted successfully..."
+               message:`Here is the deleted product id ${id}...`
           })
      } catch (err) {
           return res.status(500).json({
