@@ -2,6 +2,8 @@ import express from "express";
 import {router as ProductRoute} from "./Product/ProductRoutes.js";
 const app = express();
 
+app.use(express.json({limit:'16kb'}));
+
 app.use("/api/v1/product",ProductRoute);
 
 app.get("/",(req,res)=>{
