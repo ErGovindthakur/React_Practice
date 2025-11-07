@@ -8,4 +8,5 @@ app.get("/",(req,res)=>{
           message:"Server is running successfully"
      })
 })
+
 export default app;
