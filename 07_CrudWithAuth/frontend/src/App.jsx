@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 
 const App = () => {
+
+  let products = [
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+    {name:"Abc",price:123,description:"Hey this is an amazing product"},
+  ]
   const [toggle, setToggle] = useState(false);
 
   const toggleSideBar = () => setToggle((prev) => !prev);
@@ -10,7 +20,7 @@ const App = () => {
       {/* 🟣 Sidebar Section */}
       <div
         className={`fixed top-0 left-0 h-full bg-zinc-800 shadow-xl shadow-violet-500/30 transition-all duration-500 ease-in-out
-        ${toggle ? "translate-x-0 w-[400px]" : "-translate-x-full w-[400px]"}`}
+        ${toggle ? "translate-x-0 w-[400px]" : "-translate-x-full w-[400px]"} z-50`}
       >
         <div className="p-6 flex flex-col h-full">
           <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
@@ -47,7 +57,7 @@ const App = () => {
 
       {/* 🟢 Main Content Area */}
       <div className="relative z-10 flex flex-col items-center h-full text-center  transition-all duration-500 ease-in-out">
-        <h1 className="text-4xl font-bold pt-9 pb-3">Welcome to Product Dashboard</h1> 
+        <h1 className="text-4xl font-bold pt-18 pb-9">Welcome to Product Dashboard</h1> 
 
         <button
           className="bg-violet-700 px-5 py-3 rounded-md text-white cursor-pointer hover:bg-violet-800 transition absolute top-5 right-5"
@@ -55,9 +65,18 @@ const App = () => {
         >
           {toggle ? "Close Sidebar" : "Add Product"}
         </button>
-      <div className="text-white text-3xl">
-        Here is your Product List
+
+        <div className=" w-full h-screen flex justify-center gap-x-3 gap-y-2 flex-wrap">
+        {
+          products.map((items,index)=>(
+      <div className="text-white w-[320px] h-[160px] rounded-md bg-zinc-700" key={index}>
+        <h3>{items.name}</h3>
+        <p>{items.price}Rs</p>
+        <p>{items.description}</p>
       </div>
+          ))
+        }
+        </div>
       </div>
 
     </div>
