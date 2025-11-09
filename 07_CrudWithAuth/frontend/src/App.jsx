@@ -1,26 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const App = () => {
-
-  let products = [
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-    {name:"Abc",price:123,description:"Hey this is an amazing product"},
-  ]
+  // 🟢 State Management
+  const [product, setProduct] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ Added loading state
+  const [error, setError] = useState(null); // ✅ Added error handling state
   const [toggle, setToggle] = useState(false);
 
+  // 🧠 Function to Fetch Products from Backend
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch("http://localhost:9090/api/v1/product/getProducts");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to fetch products");
+      }
+
+      setProduct(data.product || []); // ✅ Added fallback to avoid undefined errors
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false); // ✅ Stop loading in both success/failure
+    }
+  };
+
+  // ⚙️ Run only once on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // 🔁 Toggle sidebar visibility
   const toggleSideBar = () => setToggle((prev) => !prev);
 
   return (
-    <div className="relative h-screen bg-zinc-900 text-white overflow-hidden">
+    <div className="relative min-h-screen bg-zinc-900 text-white overflow-hidden">
       {/* 🟣 Sidebar Section */}
       <div
         className={`fixed top-0 left-0 h-full bg-zinc-800 shadow-xl shadow-violet-500/30 transition-all duration-500 ease-in-out
-        ${toggle ? "translate-x-0 w-[400px]" : "-translate-x-full w-[400px]"} z-50`}
+        ${toggle ? "translate-x-0 w-[400px]" : "-translate-x-full w-[400px]"} 
+        z-50`} // ✅ Sidebar comes above everything
       >
         <div className="p-6 flex flex-col h-full">
           <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
@@ -40,24 +59,29 @@ const App = () => {
               placeholder="Enter Product Description*"
               className="rounded-md outline-none border-2 border-violet-400 bg-transparent px-4 py-2 text-lg"
             />
-            <button className="bg-violet-700 px-4 py-2 rounded-md hover:bg-violet-800 transition">
+            <button
+              type="button"
+              className="bg-violet-700 px-4 py-2 rounded-md hover:bg-violet-800 transition"
+            >
               Add Product
             </button>
           </form>
         </div>
       </div>
 
-      {/* 🔳 Optional Dark Overlay (click to close sidebar) */}
+      {/* 🔳 Optional Overlay (click to close sidebar) */}
       {toggle && (
         <div
-          className="fixed inset-0 bg-black/50 transition-opacity duration-500"
+          className="fixed inset-0 bg-black/50 transition-opacity duration-500 z-40"
           onClick={toggleSideBar}
         ></div>
       )}
 
       {/* 🟢 Main Content Area */}
-      <div className="relative z-10 flex flex-col items-center h-full text-center  transition-all duration-500 ease-in-out">
-        <h1 className="text-4xl font-bold pt-18 pb-9">Welcome to Product Dashboard</h1> 
+      <div className="relative z-10 flex flex-col items-center h-full text-center transition-all duration-500 ease-in-out">
+        <h1 className="text-4xl font-bold pt-18 pb-9">
+          Welcome to Product Dashboard
+        </h1>
 
         <button
           className="bg-violet-700 px-5 py-3 rounded-md text-white cursor-pointer hover:bg-violet-800 transition absolute top-5 right-5"
@@ -66,19 +90,34 @@ const App = () => {
           {toggle ? "Close Sidebar" : "Add Product"}
         </button>
 
-        <div className=" w-full h-screen flex justify-center gap-x-3 gap-y-2 flex-wrap">
-        {
-          products.map((items,index)=>(
-      <div className="text-white w-[320px] h-[160px] rounded-md bg-zinc-700" key={index}>
-        <h3>{items.name}</h3>
-        <p>{items.price}Rs</p>
-        <p>{items.description}</p>
-      </div>
-          ))
-        }
+        {/* 🟨 Product Area */}
+        <div className="w-full flex justify-center gap-4 flex-wrap mt-12 px-4">
+          {loading ? (
+            <p className="text-xl text-gray-400 animate-pulse">
+              Loading Products...
+            </p>
+          ) : error ? (
+            <p className="text-red-400 text-xl">Error: {error}</p>
+          ) : product.length === 0 ? (
+            <p className="text-gray-400 text-xl">No Products Found</p>
+          ) : (
+            product.map((item, index) => (
+              <div
+                className="bg-zinc-800 border border-violet-500/30 shadow-md shadow-violet-400/10 text-white w-[320px] h-[180px] rounded-xl p-4 flex flex-col justify-center hover:scale-[1.03] transition"
+                key={index}
+              >
+                <h3 className="text-lg font-semibold">{item.name}</h3>
+                <p className="text-violet-400 font-medium mt-1">
+                  ₹{item.price}
+                </p>
+                <p className="text-gray-400 text-sm mt-2 line-clamp-3">
+                  {item.description}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
-
     </div>
   );
 };
