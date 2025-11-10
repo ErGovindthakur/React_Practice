@@ -1,36 +1,59 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const App = () => {
   // 🟢 State Management
   const [product, setProduct] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ Added loading state
-  const [error, setError] = useState(null); // ✅ Added error handling state
+  const [newProduct,setNewProduct] = useState({
+    name:"",
+    price:0,
+    description:""
+  });
+
+  const [loading, setLoading] = useState(true); // Added loading state
+  const [error, setError] = useState(null); //Added error handling state
   const [toggle, setToggle] = useState(false);
 
   // 🧠 Function to Fetch Products from Backend
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:9090/api/v1/product/getProducts");
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to fetch products");
-      }
-
-      setProduct(data.product || []); // ✅ Added fallback to avoid undefined errors
+      const res = await axios.get("http://localhost:9090/api/v1/product/getProducts");
+      console.log(res)
+      const {product} = res.data;
+      setProduct(product || []); //Added fallback to avoid undefined errors
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false); // ✅ Stop loading in both success/failure
+      setLoading(false); //Stop loading in both success/failure
     }
   };
 
-  // ⚙️ Run only once on component mount
+  const handleChange = (e) => {
+    const {name,value} = e.target;
+    setNewProduct((prev)=>({...prev,[name]:value}));
+  }
+  const addProduct = async(e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:9090/api/v1/product/createProduct',newProduct);
+
+      setNewProduct({
+        name:"",
+        price:0,
+        description:""
+      })
+      fetchProducts();
+      setToggle(false);
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  //Run only once on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // 🔁 Toggle sidebar visibility
+  //Toggle sidebar visibility
   const toggleSideBar = () => setToggle((prev) => !prev);
 
   return (
@@ -39,28 +62,37 @@ const App = () => {
       <div
         className={`fixed top-0 left-0 h-full bg-zinc-800 shadow-xl shadow-violet-500/30 transition-all duration-500 ease-in-out
         ${toggle ? "translate-x-0 w-[400px]" : "-translate-x-full w-[400px]"} 
-        z-50`} // ✅ Sidebar comes above everything
+        z-50`} //Sidebar comes above everything
       >
         <div className="p-6 flex flex-col h-full">
           <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
 
-          <form className="flex flex-col gap-4">
+          <form onSubmit={addProduct} className="flex flex-col gap-4">
             <input
               type="text"
+              name="name"
+              value={newProduct.name}
+              onChange={handleChange}
               placeholder="Enter Product Title*"
               className="rounded-md outline-none border-2 border-violet-400 bg-transparent px-4 py-2 text-lg"
             />
             <input
               type="number"
+              name="price"
+              value={newProduct.price}
+              onChange={handleChange}
               placeholder="Enter Product Price*"
               className="rounded-md outline-none border-2 border-violet-400 bg-transparent px-4 py-2 text-lg"
             />
             <textarea
+              name="description"
+              value={newProduct.description}
+              onChange={handleChange}
               placeholder="Enter Product Description*"
               className="rounded-md outline-none border-2 border-violet-400 bg-transparent px-4 py-2 text-lg"
             />
             <button
-              type="button"
+              type="submit"
               className="bg-violet-700 px-4 py-2 rounded-md hover:bg-violet-800 transition"
             >
               Add Product
