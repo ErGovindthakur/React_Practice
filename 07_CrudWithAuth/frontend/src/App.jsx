@@ -4,12 +4,13 @@ import axios from "axios";
 const App = () => {
   // 🟢 State Management
   const [product, setProduct] = useState([]);
-  const [newProduct,setNewProduct] = useState({
-    name:"",
-    price:0,
-    description:""
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    price: 0,
+    description: "",
   });
 
+  // const [productId,setProductId] = useState(null);
   const [loading, setLoading] = useState(true); // Added loading state
   const [error, setError] = useState(null); //Added error handling state
   const [toggle, setToggle] = useState(false);
@@ -17,9 +18,11 @@ const App = () => {
   // 🧠 Function to Fetch Products from Backend
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:9090/api/v1/product/getProducts");
-      console.log(res)
-      const {product} = res.data;
+      const res = await axios.get(
+        "http://localhost:9090/api/v1/product/getProducts"
+      );
+      // console.log(res)
+      const { product } = res.data;
       setProduct(product || []); //Added fallback to avoid undefined errors
     } catch (err) {
       setError(err.message);
@@ -29,23 +32,41 @@ const App = () => {
   };
 
   const handleChange = (e) => {
-    const {name,value} = e.target;
-    setNewProduct((prev)=>({...prev,[name]:value}));
-  }
-  const addProduct = async(e) => {
+    const { name, value } = e.target;
+    setNewProduct((prev) => ({ ...prev, [name]: value }));
+  };
+  const addProduct = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:9090/api/v1/product/createProduct',newProduct);
+      await axios.post(
+        "http://localhost:9090/api/v1/product/createProduct",
+        newProduct
+      );
 
       setNewProduct({
-        name:"",
-        price:0,
-        description:""
-      })
+        name: "",
+        price: 0,
+        description: "",
+      });
       fetchProducts();
       setToggle(false);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
+    }
+  };
+
+  const deleteProduct = async(id) => {
+    try {
+      let res = await axios.delete(`http://localhost:9090/api/v1/product/deleteProduct/${id}`);
+
+      if(res.status!==200){
+        throw new Error("Failed to delete product")
+      }
+
+      alert("Product deleted");
+      fetchProducts();
+    } catch (err) {
+      console.log(err.message);
     }
   }
   //Run only once on component mount
@@ -129,7 +150,7 @@ const App = () => {
               Loading Products...
             </p>
           ) : error ? (
-            <p className="text-red-400 text-xl">Error: {error}</p>
+            <p className="text-red-400 text-xl">Error: {error} (Please add new product)</p>
           ) : product.length === 0 ? (
             <p className="text-gray-400 text-xl">No Products Found</p>
           ) : (
@@ -145,6 +166,16 @@ const App = () => {
                 <p className="text-gray-400 text-sm mt-2 line-clamp-3">
                   {item.description}
                 </p>
+
+                <div className="flex gap-3 justify-center mt-3">
+                  <button className="bg-violet-700 px-2 rounded-md text-white cursor-pointer hover:bg-violet-800 transition">
+                    Edit
+                  </button>
+                  <button className="bg-violet-700 px-2 py-1 rounded-md text-white cursor-pointer hover:bg-violet-800 transition"onClick={()=>deleteProduct(item._id)} >
+                    Delete
+                  </button>
+                </div>
+                
               </div>
             ))
           )}
