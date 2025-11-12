@@ -115,7 +115,14 @@ const App = () => {
   }, []);
 
   //Toggle sidebar visibility
-  const toggleSideBar = () => setToggle((prev) => !prev);
+  const toggleSideBar = () => {
+    if (toggle) {
+      setIsEditing(false);
+      setEditProductId(null);
+      setNewProduct({ name: "", price: 0, description: "" });
+    }
+    setToggle((prev) => !prev);
+  };
 
   return (
     <div className="relative min-h-screen bg-zinc-900 text-white overflow-hidden">
@@ -126,7 +133,9 @@ const App = () => {
         z-50`} //Sidebar comes above everything
       >
         <div className="p-6 flex flex-col h-full">
-          <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
+          <h3 className="text-2xl font-semibold mb-5">
+            {isEditing ? "Update Product" : "Add Product"}
+          </h3>
 
           <form
             onSubmit={isEditing ? updateProduct : addProduct}
