@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const App = () => {
-  // 🟢 State Management
+  // 1. State Management for adding new product
   const [product, setProduct] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -10,6 +10,7 @@ const App = () => {
     description: "",
   });
 
+  // 2. state for updating existing product
   const [isEditing, setIsEditing] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
 
@@ -17,7 +18,7 @@ const App = () => {
   const [error, setError] = useState(null); //Added error handling state
   const [toggle, setToggle] = useState(false);
 
-  // 🧠 Function to Fetch Products from Backend
+  // Function to Fetch Products from Backend
   const fetchProducts = async () => {
     try {
       const res = await axios.get(
@@ -127,7 +128,10 @@ const App = () => {
         <div className="p-6 flex flex-col h-full">
           <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
 
-          <form onSubmit={isEditing ? updateProduct : addProduct} className="flex flex-col gap-4">
+          <form
+            onSubmit={isEditing ? updateProduct : addProduct}
+            className="flex flex-col gap-4"
+          >
             <input
               type="text"
               name="name"
@@ -155,7 +159,7 @@ const App = () => {
               type="submit"
               className="bg-violet-700 px-4 py-2 rounded-md hover:bg-violet-800 transition"
             >
-              {isEditing ? "Update Product":"Add Product"}
+              {isEditing ? "Update Product" : "Add Product"}
             </button>
           </form>
         </div>
