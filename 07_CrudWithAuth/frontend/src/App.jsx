@@ -10,7 +10,9 @@ const App = () => {
     description: "",
   });
 
-  // const [productId,setProductId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editProductId, setEditProductId] = useState(null);
+
   const [loading, setLoading] = useState(true); // Added loading state
   const [error, setError] = useState(null); //Added error handling state
   const [toggle, setToggle] = useState(false);
@@ -55,12 +57,14 @@ const App = () => {
     }
   };
 
-  const deleteProduct = async(id) => {
+  const deleteProduct = async (id) => {
     try {
-      let res = await axios.delete(`http://localhost:9090/api/v1/product/deleteProduct/${id}`);
+      let res = await axios.delete(
+        `http://localhost:9090/api/v1/product/deleteProduct/${id}`
+      );
 
-      if(res.status!==200){
-        throw new Error("Failed to delete product")
+      if (res.status !== 200) {
+        throw new Error("Failed to delete product");
       }
 
       alert("Product deleted");
@@ -68,7 +72,42 @@ const App = () => {
     } catch (err) {
       console.log(err.message);
     }
-  }
+  };
+
+  const editProduct = (product) => {
+    setIsEditing(true);
+    setEditProductId(product._id);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      description: product.description,
+    });
+    setToggle(true); // open sidebar for editing
+  };
+
+  const updateProduct = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:9090/api/v1/product/updateProduct/${editProductId}`,
+        newProduct
+      );
+
+      alert("Product updated successfully!");
+      setIsEditing(false);
+      setEditProductId(null);
+      setNewProduct({
+        name: "",
+        price: 0,
+        description: "",
+      });
+      fetchProducts();
+      setToggle(false);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   //Run only once on component mount
   useEffect(() => {
     fetchProducts();
@@ -88,7 +127,7 @@ const App = () => {
         <div className="p-6 flex flex-col h-full">
           <h3 className="text-2xl font-semibold mb-5">Add Product</h3>
 
-          <form onSubmit={addProduct} className="flex flex-col gap-4">
+          <form onSubmit={isEditing ? updateProduct : addProduct} className="flex flex-col gap-4">
             <input
               type="text"
               name="name"
@@ -116,7 +155,7 @@ const App = () => {
               type="submit"
               className="bg-violet-700 px-4 py-2 rounded-md hover:bg-violet-800 transition"
             >
-              Add Product
+              {isEditing ? "Update Product":"Add Product"}
             </button>
           </form>
         </div>
@@ -150,7 +189,9 @@ const App = () => {
               Loading Products...
             </p>
           ) : error ? (
-            <p className="text-red-400 text-xl">Error: {error} (Please add new product)</p>
+            <p className="text-red-400 text-xl">
+              Error: {error} (Please add new product)
+            </p>
           ) : product.length === 0 ? (
             <p className="text-gray-400 text-xl">No Products Found</p>
           ) : (
@@ -168,14 +209,19 @@ const App = () => {
                 </p>
 
                 <div className="flex gap-3 justify-center mt-3">
-                  <button className="bg-violet-700 px-2 rounded-md text-white cursor-pointer hover:bg-violet-800 transition">
+                  <button
+                    className="bg-violet-700 px-2 rounded-md text-white cursor-pointer hover:bg-violet-800 transition"
+                    onClick={() => editProduct(item)}
+                  >
                     Edit
                   </button>
-                  <button className="bg-violet-700 px-2 py-1 rounded-md text-white cursor-pointer hover:bg-violet-800 transition"onClick={()=>deleteProduct(item._id)} >
+                  <button
+                    className="bg-violet-700 px-2 py-1 rounded-md text-white cursor-pointer hover:bg-violet-800 transition"
+                    onClick={() => deleteProduct(item._id)}
+                  >
                     Delete
                   </button>
                 </div>
-                
               </div>
             ))
           )}
